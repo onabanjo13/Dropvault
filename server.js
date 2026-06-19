@@ -113,7 +113,7 @@ app.post('/api/upload', (req, res) => {
         category: getCategory(file.mimetype),
         uploadedAt: new Date().toISOString(),
         downloads: 0,
-        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(), // 7 days
+        expiresAt: null,
       };
       fileStore.set(id, meta);
       return { ...meta, downloadUrl: `/api/download/${id}`, previewUrl: `/api/preview/${id}` };
@@ -126,7 +126,7 @@ app.post('/api/upload', (req, res) => {
 // GET /api/files — list all files
 app.get('/api/files', (req, res) => {
   const files = Array.from(fileStore.values())
-    .filter(f => new Date(f.expiresAt) > new Date())
+    .filter(f => f)
     .sort((a, b) => new Date(b.uploadedAt) - new Date(a.uploadedAt))
     .map(f => ({ ...f, downloadUrl: `/api/download/${f.id}`, previewUrl: `/api/preview/${f.id}` }));
   res.json({ files });
@@ -185,16 +185,6 @@ app.get('/api/stats', (req, res) => {
   });
 });
 
-// Cleanup expired files every hour
-setInterval(() => {
-  const now = new Date();
-  for (const [id, meta] of fileStore.entries()) {
-    if (new Date(meta.expiresAt) < now) {
-      const filePath = path.join(UPLOADS_DIR, meta.filename);
-      if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
-      fileStore.delete(id);
-    }
-  }
-}, 60 * 60 * 1000);
+
 
 app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
