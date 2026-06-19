@@ -10,17 +10,17 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg: #0b0c0f;
-      --surface: #13151a;
-      --surface2: #1c1f27;
+      --bg: #7f543d;
+      --surface:#c4a484;
+      --surface2: #faf9f6;
       --border: #252830;
-      --accent: #5865f2;
-      --accent-glow: rgba(88,101,242,0.25);
-      --accent2: #57c7e3;
+      --accent: brown;
+      --accent-glow: brown;
+      --accent2: #c4a484;
       --success: #3ba55c;
       --danger: #ed4245;
       --warning: #faa61a;
-      --text: #e8eaf0;
+      --text: black;
       --muted: #6b7280;
       --mono: 'Space Mono', monospace;
       --sans: 'Inter', sans-serif;
@@ -354,7 +354,7 @@
       color: var(--muted);
       font-family: var(--mono);
     }
-    .expiry { color: var(--warning); }
+
 
     .file-actions { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
     .action-btn {
@@ -460,8 +460,8 @@
 <div class="container">
   <header>
     <div class="logo">
-      <div class="logo-icon">📦</div>
-      Drop<span>Vault</span>
+      <div class="logo-icon"></div>
+      Clinton's<span>Project</span>
     </div>
     <div class="stats-bar" id="statsBar">
       <span>Files: <b id="statFiles">0</b></span>
@@ -472,14 +472,14 @@
 
   <!-- Upload Section -->
   <div class="upload-section">
-    <div class="section-label">Upload Files</div>
+    <div class="section-label">Upload your Files</div>
 
     <div class="drop-zone" id="dropZone">
       <span class="drop-icon">☁️</span>
-      <div class="drop-title">Drop files here</div>
+      <div class="drop-title">upload your files here</div>
       <div class="drop-sub">
         or <strong>click to browse</strong> · Max 50MB per file · Up to 10 files at once<br>
-        Images, PDFs, videos, audio, documents, archives
+        Images, PDFs, audio, documents, archives
       </div>
       <button class="btn btn-primary" onclick="document.getElementById('fileInput').click()">
         📁 Choose Files
@@ -513,9 +513,9 @@
       <button class="filter-btn active" data-cat="all">All</button>
       <button class="filter-btn" data-cat="image">Images</button>
       <button class="filter-btn" data-cat="pdf">PDFs</button>
-      <button class="filter-btn" data-cat="video">Video</button>
+      <!-- <button class="filter-btn" data-cat="video">Video</button> -->
       <button class="filter-btn" data-cat="document">Docs</button>
-      <button class="filter-btn" data-cat="other">Other</button>
+      <!-- <button class="filter-btn" data-cat="other">Other</button> -->
       <input class="search-input" id="searchInput" type="text" placeholder="Search files..." />
     </div>
     <div class="files-grid" id="filesGrid"></div>
@@ -686,7 +686,6 @@
     }
 
     grid.innerHTML = files.map(f => {
-      const expDays = Math.ceil((new Date(f.expiresAt) - Date.now()) / 86400000);
       const isImage = f.category === 'image';
       const thumb = isImage
         ? `<div class="file-thumb"><img src="${f.previewUrl}" alt="" loading="lazy" /></div>`
@@ -703,7 +702,7 @@
             <div class="file-details">
               <span>${f.sizeFormatted}</span>
               <span>${f.downloads} dl</span>
-              <span class="expiry">expires ${expDays}d</span>
+
               <span>${timeAgo(f.uploadedAt)}</span>
             </div>
           </div>
@@ -753,7 +752,7 @@
     if (!f) return;
     document.getElementById('modalTitle').textContent = f.originalName;
     const preview = document.getElementById('modalPreview');
-    const expDays = Math.ceil((new Date(f.expiresAt) - Date.now()) / 86400000);
+
 
     if (f.category === 'image') {
       preview.innerHTML = `<img src="${f.previewUrl}" alt="${escHtml(f.originalName)}" />`;
@@ -771,7 +770,7 @@
       <div class="info-row"><span class="info-label">Size</span><span class="info-val">${f.sizeFormatted}</span></div>
       <div class="info-row"><span class="info-label">Type</span><span class="info-val">${f.mimetype}</span></div>
       <div class="info-row"><span class="info-label">Uploaded</span><span class="info-val">${new Date(f.uploadedAt).toLocaleString()}</span></div>
-      <div class="info-row"><span class="info-label">Expires</span><span class="info-val" style="color:var(--warning)">${expDays} days</span></div>
+
       <div class="info-row"><span class="info-label">Downloads</span><span class="info-val">${f.downloads}</span></div>
     `;
     document.getElementById('shareUrl').value = `${location.origin}/api/download/${f.id}`;
